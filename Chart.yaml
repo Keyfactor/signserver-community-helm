@@ -1,5 +1,5 @@
 apiVersion: v2
-name: signserver-community-helm
+name: signserver-helm
 description: A Helm chart for running SignServer in Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
