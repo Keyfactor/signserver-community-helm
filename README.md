@@ -1,15 +1,34 @@
-![SignServer](.github/signserver-community.svg)
+<!--SignServer Community logo for light and dark mode -->
+<a href="https://signserver.org">
+  <picture>
+    <source media="(prefers-color-scheme: light)" srcset=".github/community-signserver.png?raw=true">
+    <source media="(prefers-color-scheme: dark)" srcset=".github/community-signserver-lite.png?raw=true">
+    <img alt="SignServer Community" src=".github/community-signserver.png?raw=true" title="SignServer Community" height="70" >
+  </picture>
+</a>
+<!--SignServer Enterprise logo for light and dark mode -->
+<a href="https://www.keyfactor.com/products/signserver-enterprise/">
+  <picture>
+    <source media="(prefers-color-scheme: light)" srcset=".github/keyfactor-signserver-enterprise.png?raw=true">
+    <source media="(prefers-color-scheme: dark)" srcset=".github/keyfactor-signserver-enterprise-lite.png?raw=true">
+    <img alt="SignServer Enterprise" src=".github/keyfactor-signserver-enterprise.png?raw=true" title="SignServer Enterprise" height="70" >
+  </picture>
+</a>
+
+##
+
+* **SignServer Community** (SignServer CE) - free and open source, OSI Certified Open Source Software, LGPL-licensed subset of SignServer Enterprise
+* **SignServer Enterprise** (SignServer EE) - developed and commercially supported
+
+# Helm Chart for SignServer Enterprise
+
+**[Documentation](https://docs.keyfactor.com/container/latest/signserver/)** for SignServer Enterprise
 
 # Helm Chart for SignServer Community
 
 Helm chart for deploying SignServer in Kubernetes. Designed to be simple and flexible.
 
 Welcome to SignServer – the Open Source Signing Software. Digitally sign documents, code, and timestamps while keeping your signature process and keys secure.
-
-There are two versions of SignServer:
-
-* **SignServer Community** (SignServer CE) - free and open source, OSI Certified Open Source Software, LGPL-licensed subset of SignServer Enterprise
-* **SignServer Enterprise** (SignServer EE) - developed and commercially supported
 
 OSI Certified is a certification mark of the Open Source Initiative.
 
@@ -45,7 +64,7 @@ SignServer depends on an existing PKI for infrastructure certificates (client TL
 
 ### Add repo
 ```shell
-helm repo add keyfactor https://keyfactor.github.io/ejbca-community-helm/
+helm repo add keyfactor https://keyfactor.github.io/signserver-community-helm/
 ```
 
 ### Quick start
@@ -62,6 +81,17 @@ Deploy `signserver-community-helm` on the Kubernetes cluster with custom configu
 ```shell
 helm install signserver keyfactor/signserver-community-helm --namespace signserver --create-namespace --values signserver.yaml
 ```
+## Access to AdminWeb
+
+By default you will not have access to AdminWeb. 
+
+**IMPORTANT**
+
+For first time deployments `allowAny` need to be set to true for access to AdminWeb and restrction can then be set under the administartion page.
+
+**WARNING** 
+
+`allowAny` needs to be changed back to false for redeployment unless you want restricted changes to be overwritten.
 
 ## Example Custom Deployments
 
@@ -274,26 +304,27 @@ Note that the samples prefix properties with `WORKERGENID1` which always creates
 
 ### SignServer Deployment Parameters
 
-| Name                                  | Description                                                                                            | Default |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------- |
-| signserver.useEphemeralH2Database     | If in-memory internal H2 database should be used                                                       | true    |
-| signserver.useH2Persistence           | If internal H2 database with persistence should be used. Requires existingH2PersistenceClaim to be set | false   |
-| signserver.existingH2PersistenceClaim | PersistentVolumeClaim that internal H2 database can use for data persistence                           |         |
-| signserver.importAppserverKeystore    | If an existing keystore should be used for TLS configurations when reverse proxy is not used           | false   |
-| signserver.appserverKeystoreSecret    | Secret containing keystore for TLS configuration of SignServer application server                      |         |
-| signserver.importAppserverTruststore  | If an existing truststore should be used for TLS configurations when reverse proxy is not used         | false   |
-| signserver.appserverTruststoreSecret  | Secret containing truststore for TLS configuration of SignServer application server                    |         |
-| signserver.importWorkerProperties     | If properties files should be used to configure SignServer                                             | false   |
-| signserver.workerPropertiesSecret     | Secret containing properties files used for configuring SignServer at startup                          |         |
-| signserver.importKeystores            | If keystore files should be mounted into the SignServer container                                      | false   |
-| signserver.keystoresSecret            | Secret containing keystore files that can be used by SignServer workers                                |         |
-| signserver.keystoresMountPath         | Mount path in the SignServer container for mounted keystore files                                      |         |
-| signserver.env                        | Environment variables to pass to container                                                             |         |
-| signserver.envRaw                     | Environment variables to pass to container in Kubernetes YAML format                                   |         |
-| signserver.initContainers             | Extra init containers to be added to the deployment                                                    | []      |
-| signserver.sidecarContainers          | Extra sidecar containers to be added to the deployment                                                 | []      |
-| signserver.volumes                    | Extra volumes to be added to the deployment                                                            | []      |
-| signserver.volumeMounts               | Extra volume mounts to be added to the deployment                                                      | []      |
+| Name                                  | Description                                                                                                                                                | Default |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| signserver.allowAny                   | Provides access to AdminWeb. Change to true at first deployment for access. Should be changed back to false for restricted access to not be overwritten.   | false   |
+| signserver.useEphemeralH2Database     | If in-memory internal H2 database should be used                                                                                                           | true    |
+| signserver.useH2Persistence           | If internal H2 database with persistence should be used. Requires existingH2PersistenceClaim to be set                                                     | false   |
+| signserver.existingH2PersistenceClaim | PersistentVolumeClaim that internal H2 database can use for data persistence                                                                               |         |
+| signserver.importAppserverKeystore    | If an existing keystore should be used for TLS configurations when reverse proxy is not used                                                               | false   |
+| signserver.appserverKeystoreSecret    | Secret containing keystore for TLS configuration of SignServer application server                                                                          |         |
+| signserver.importAppserverTruststore  | If an existing truststore should be used for TLS configurations when reverse proxy is not used                                                             | false   |
+| signserver.appserverTruststoreSecret  | Secret containing truststore for TLS configuration of SignServer application server                                                                        |         |
+| signserver.importWorkerProperties     | If properties files should be used to configure SignServer                                                                                                 | false   |
+| signserver.workerPropertiesSecret     | Secret containing properties files used for configuring SignServer at startup                                                                              |         |
+| signserver.importKeystores            | If keystore files should be mounted into the SignServer container                                                                                          | false   |
+| signserver.keystoresSecret            | Secret containing keystore files that can be used by SignServer workers                                                                                    |         |
+| signserver.keystoresMountPath         | Mount path in the SignServer container for mounted keystore files                                                                                          |         |
+| signserver.env                        | Environment variables to pass to container                                                                                                                 |         |
+| signserver.envRaw                     | Environment variables to pass to container in Kubernetes YAML format                                                                                       |         |
+| signserver.initContainers             | Extra init containers to be added to the deployment                                                                                                        | []      |
+| signserver.sidecarContainers          | Extra sidecar containers to be added to the deployment                                                                                                     | []      |
+| signserver.volumes                    | Extra volumes to be added to the deployment                                                                                                                | []      |
+| signserver.volumeMounts               | Extra volume mounts to be added to the deployment                                                                                                          | []      |
 
 ### SignServer Environment Variables
 
