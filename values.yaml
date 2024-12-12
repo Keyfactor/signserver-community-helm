@@ -3,6 +3,7 @@
 # Declare variables to be passed into your templates.
 
 signserver:
+  allowAny: false
   useEphemeralH2Database: true
   useH2Persistence: false
   #existingH2PersistenceClaim: "database-data-claim"

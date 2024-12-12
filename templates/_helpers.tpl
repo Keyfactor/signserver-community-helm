@@ -18,6 +18,10 @@ Define the SignServer deployment parameters
 {{- if hasKey .Values.signserver "envRaw" }}
 {{ toYaml .Values.signserver.envRaw }}
 {{- end }}
+{{- if .Values.signserver.allowAny }}
+- name: ALLOW_ANY
+  value: "true"
+{{- end }}
 {{- end }}
 
 {{/*
