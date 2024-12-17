@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "signserver-community-helm.fullname" . }}
+  name: {{ include "signserver-helm.fullname" . }}
   labels:
-    {{- include "signserver-community-helm.labels" . | nindent 4 }}
+    {{- include "signserver-helm.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "signserver-community-helm.selectorLabels" . | nindent 6 }}
+      {{- include "signserver-helm.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,13 +18,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "signserver-community-helm.selectorLabels" . | nindent 8 }}
+        {{- include "signserver-helm.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "signserver-community-helm.serviceAccountName" . }}
+      serviceAccountName: {{ include "signserver-helm.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}  
       {{- if .Values.signserver.initContainers }}
@@ -37,7 +37,7 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env: {{- include "signserver-community-helm.signserverDeploymentParameters" . | nindent 12 }}
+          env: {{- include "signserver-helm.signserverDeploymentParameters" . | nindent 12 }}
             {{- if .Values.services.proxyAJP.enabled }}
             - name: PROXY_AJP_BIND
               value: {{ .Values.services.proxyAJP.bindIP }}
