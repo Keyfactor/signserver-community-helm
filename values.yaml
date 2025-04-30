@@ -4,6 +4,7 @@
 
 signserver:
   allowAny: false
+  #useP11NgAsP11: true
   useEphemeralH2Database: true
   useH2Persistence: false
   #existingH2PersistenceClaim: "database-data-claim"
