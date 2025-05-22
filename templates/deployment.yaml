@@ -84,7 +84,7 @@ spec:
               command:
               - curl
               - -sf
-              - http://localhost/signserver/healthcheck/signserverhealth?workerIds=none
+              - http://localhost/signserver/healthcheck/signserverhealth?workerId=none
             failureThreshold: 30
             periodSeconds: 10
           readinessProbe:
@@ -99,7 +99,7 @@ spec:
               command:
               - curl
               - -sf
-              - http://localhost/signserver/healthcheck/signserverhealth?workerIds=none
+              - http://localhost/signserver/healthcheck/signserverhealth?workerId=none
             periodSeconds: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
