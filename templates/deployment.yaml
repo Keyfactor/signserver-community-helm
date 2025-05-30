@@ -80,26 +80,27 @@ spec:
               protocol: TCP
             {{- end }}
           startupProbe:
-            tcpSocket:
-              {{- if .Values.services.directHttp.enabled }}
-              port: 8443
-              {{- else if .Values.services.proxyAJP.enabled }}
-              port: 8009
-              {{- else if .Values.services.proxyHttp.enabled }}
-              port: 8082
-              {{- end }}
-            initialDelaySeconds: 10
-            periodSeconds: 2
-            failureThreshold: 500
+            exec:
+              command:
+              - curl
+              - -sf
+              - http://localhost/signserver/healthcheck/signserverhealth?workerId=none
+            failureThreshold: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+              - curl
+              - -sf
+              - http://localhost/signserver/healthcheck/signserverhealth
+            periodSeconds: 10
           livenessProbe:
-            tcpSocket:
-              {{- if .Values.services.directHttp.enabled }}
-              port: 8443
-              {{- else if .Values.services.proxyAJP.enabled }}
-              port: 8009
-              {{- else if .Values.services.proxyHttp.enabled }}
-              port: 8082
-              {{- end }}
+            exec:
+              command:
+              - curl
+              - -sf
+              - http://localhost/signserver/healthcheck/signserverhealth?workerId=none
+            periodSeconds: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
