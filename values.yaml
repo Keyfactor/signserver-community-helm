@@ -32,6 +32,8 @@ signserver:
   volumes: []
   # Extra volume mounts to be added to the deployment
   volumeMounts: []
+
+
 # Only one of the following services can be enabled at a time
 services:
   directHttp:
@@ -53,6 +55,7 @@ services:
   # Extra sidecar ports to be added to the service, optionally used when sidecarContainers
   # are defined and need to expose ports
   sidecarPorts: []
+
 # Requires proxyAJP or proxyHttp service to be enabled for adminweb access
 ingress:
   enabled: false
@@ -78,15 +81,19 @@ ingress:
         - path: /signserver
           pathType: Prefix
   tls: []
+
 replicaCount: 1
+
 image:
   repository: keyfactor/signserver-ce
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion
   #tag: latest
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -95,25 +102,31 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
+
 podAnnotations: {}
+
 podSecurityContext: {}
-# fsGroup: 2000
+  # fsGroup: 2000
 
 securityContext: {}
-# capabilities:
-#   drop:
-#   - ALL
-# readOnlyRootFilesystem: true
-# runAsNonRoot: true
-# runAsUser: 1000
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
 
 resources: {}
+
 autoscaling:
   enabled: false
   minReplicas: 1
   maxReplicas: 5
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
+
 nodeSelector: {}
+
 tolerations: []
+
 affinity: {}

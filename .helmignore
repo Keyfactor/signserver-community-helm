@@ -1,5 +1,4 @@
 .helmignore
 .git
 .github
-.gitlab-ci.yml
 docs/
