@@ -3,10 +3,11 @@ kind: Deployment
 metadata:
   name: {{ include "signserver-helm.fullname" . }}
   labels:
-    app.kubernetes.io/component: signserver-adminweb
     {{- include "signserver-helm.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "signserver-helm.selectorLabels" . | nindent 6 }}
@@ -17,7 +18,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        app.kubernetes.io/component: signserver-adminweb
         {{- include "signserver-helm.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
@@ -26,7 +26,7 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "signserver-helm.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}  
       {{- if .Values.signserver.initContainers }}
       initContainers:
         {{- toYaml .Values.signserver.initContainers | nindent 8 }}
@@ -49,7 +49,7 @@ spec:
           lifecycle:
             postStart:
               exec:
-                command:
+                command: 
                   - "/bin/sh"
                   - "-c"
                   - |
@@ -86,6 +86,13 @@ spec:
               - -sf
               - http://localhost/signserver/healthcheck/signserverhealth?workerId=none
             failureThreshold: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+              - curl
+              - -sf
+              - http://localhost/signserver/healthcheck/signserverhealth
             periodSeconds: 10
           livenessProbe:
             exec:
