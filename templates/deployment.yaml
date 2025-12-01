@@ -80,26 +80,41 @@ spec:
               protocol: TCP
             {{- end }}
           startupProbe:
-            exec:
-              command:
-              - curl
-              - -sf
-              - http://localhost/signserver/healthcheck/signserverhealth?workerId=none
-            failureThreshold: 30
+            httpGet:
+              path: /signserver/healthcheck/signserverhealth
+              {{- if .Values.services.directHttp.enabled }}
+              port: http
+              {{- else if .Values.services.proxyAJP.enabled }}
+              port: ajp
+              {{- else if .Values.services.proxyHttp.enabled }}
+              port: proxy-http
+              {{- end }}
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 30 #30x10s = 300s
+          livenessProbe:
+            httpGet:
+              path: /signserver/healthcheck/signserverhealth
+              {{- if .Values.services.directHttp.enabled }}
+              port: http
+              {{- else if .Values.services.proxyAJP.enabled }}
+              port: ajp
+              {{- else if .Values.services.proxyHttp.enabled }}
+              port: proxy-http
+              {{- end }}
+            initialDelaySeconds: 5
             periodSeconds: 10
           readinessProbe:
-            exec:
-              command:
-              - curl
-              - -sf
-              - http://localhost/signserver/healthcheck/signserverhealth
-            periodSeconds: 10
-          livenessProbe:
-            exec:
-              command:
-              - curl
-              - -sf
-              - http://localhost/signserver/healthcheck/signserverhealth?workerId=none
+            httpGet:
+              path: /signserver/healthcheck/signserverhealth
+              {{- if .Values.services.directHttp.enabled }}
+              port: http
+              {{- else if .Values.services.proxyAJP.enabled }}
+              port: ajp
+              {{- else if .Values.services.proxyHttp.enabled }}
+              port: proxy-http
+              {{- end }}
+            initialDelaySeconds: 5
             periodSeconds: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
