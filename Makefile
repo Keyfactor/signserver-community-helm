@@ -25,26 +25,15 @@ help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s  %s\n", $$1, $$2}'
 	@echo ""
 
-# Reusable script to rename the chart file
-# 1. Finds the chart file (signserver-*.tgz)
-# 2. Constructs the new name with the suffix (e.g., -ce or -ee)
-# 3. Renames the file
-define RENAME_CHART_SCRIPT
-	orig=$$(ls signserver-*.tgz); \
-	new_name=$$(echo $$orig | sed -E 's/(.+)-([0-9].*)\.tgz/\1-$(1)-\2.tgz/'); \
-	echo "Renaming $$orig $$new_name"; \
-	mv $$orig $$new_name
-endef
-
 .PHONY: package-helm-ce
 package-helm-ce: ## Package the CE Helm chart.
 	rm -f signserver-*.tgz
 	helm package $(CURRENT_DIR)
-	$(call RENAME_CHART_SCRIPT,ce)
 
 .PHONY: package-helm-ee
 package-helm-ee: ## Package the EE Helm chart.
 	rm -f signserver-*.tgz
+	sed -i 's/^name: .*/name: signserver/' Chart.yaml
 	sed -i '/^annotations:/,$$d' $(CURRENT_DIR)/Chart.yaml
 	sed -i 's|repository: keyfactor/signserver-ce|repository: $(EE_DOCKER_REPO)|' $(CURRENT_DIR)/values.yaml
 	helm package --app-version $(EE_APPVERSION) $(CURRENT_DIR)
