@@ -50,7 +50,7 @@ publish-helm-ce: ## Publish the CE Helm chart to the OCI registry.
 
 .PHONY: publish-helm-ee
 publish-helm-ee: ## Publish the EE Helm chart to the OCI registry.
-	ee_pkg=$$(ls signserver-ee-*.tgz); \
+	ee_pkg=$$(ls signserver-*.tgz); \
 	if [ -z "$$ee_pkg" ]; then \
 		echo "Error: No EE package found. Run 'make package-helm-ee' first."; \
 		exit 1; \
