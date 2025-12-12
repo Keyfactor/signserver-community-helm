@@ -2,7 +2,7 @@
 
 CURRENT_DIR := $(shell pwd)
 
-EE_APPVERSION := 7.4.0
+EE_APPVERSION := 7.5.0
 EE_DOCKER_REPO := repo.keyfactor.com/images/signserver-ee
 DEV_OCI_STORAGE_DSS := oci://keyfactor.jfrog.io/dev-oci-storage-dss/signserver/signserver/charts/
 
