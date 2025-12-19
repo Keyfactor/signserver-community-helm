@@ -62,9 +62,9 @@ The **SignServer Community Helm Chart** bootstraps **SignServer Community** on a
 
 SignServer depends on an existing PKI for infrastructure certificates (client TLS for administration and optionally server TLS) as well as for signer certificates for workers. [EJBCA](https://www.ejbca.org) is an open-source, enterprise-grade, PKI software that is [easy to get started](https://www.ejbca.org/use-cases/get-started-with-ejbca-pki/) with and [can be deployed in Kubernetes using Helm](https://github.com/Keyfactor/ejbca-community-helm).
 
-### Add repo
+### Fetch the SignServer Community Chart
 ```shell
-helm repo add keyfactor https://keyfactor.github.io/signserver-community-helm/
+helm pull oci://repo.keyfactor.com/charts/signserver-ce --untar
 ```
 
 ### Quick start
@@ -75,15 +75,15 @@ Deploying `signserver-community-helm` using default configurations will start Si
 
 To customize the installation, create and edit a custom values file with deployment parameters:
 ```shell
-helm show values keyfactor/signserver-community-helm > signserver.yaml
+helm show values signserver-ce > signserver.yaml
 ```
 Deploy `signserver-community-helm` on the Kubernetes cluster with custom configurations:
 ```shell
-helm install signserver keyfactor/signserver-community-helm --namespace signserver --create-namespace --values signserver.yaml
+helm install signserver signserver-ce --namespace signserver --create-namespace --values signserver.yaml
 ```
 ## Access to AdminWeb
 
-By default you will not have access to AdminWeb. 
+By default, you will not have access to AdminWeb. 
 
 **IMPORTANT**
 
