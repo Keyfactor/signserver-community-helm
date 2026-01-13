@@ -94,6 +94,19 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+probes:
+  signserver:
+    startup: {}
+    readiness: {}
+    liveness: {}
+
+    # Example override for startup probe
+    # startup:
+    #   initialDelaySeconds: 45
+    #   periodSeconds: 10
+    #   timeoutSeconds: 5
+    #   failureThreshold: 60
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true

@@ -81,7 +81,7 @@ spec:
             {{- end }}
           startupProbe:
             httpGet:
-              path: /signserver/healthcheck/signserverhealth
+              path: /signserver/healthcheck/signserverhealth?workerId=none
               {{- if .Values.services.directHttp.enabled }}
               port: http
               {{- else if .Values.services.proxyAJP.enabled }}
@@ -89,12 +89,13 @@ spec:
               {{- else if .Values.services.proxyHttp.enabled }}
               port: proxy-http
               {{- end }}
-            initialDelaySeconds: 20
-            periodSeconds: 10
-            failureThreshold: 30 #30x10s = 300s
+            initialDelaySeconds: {{ .Values.probes.signserver.startup.initialDelaySeconds | default 20 }}
+            periodSeconds: {{ .Values.probes.signserver.startup.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.probes.signserver.startup.timeoutSeconds | default 1 }}
+            failureThreshold: {{ .Values.probes.signserver.startup.failureThreshold | default 30 }}
           livenessProbe:
             httpGet:
-              path: /signserver/healthcheck/signserverhealth
+              path: /signserver/healthcheck/signserverhealth?workerId=none
               {{- if .Values.services.directHttp.enabled }}
               port: http
               {{- else if .Values.services.proxyAJP.enabled }}
@@ -102,11 +103,13 @@ spec:
               {{- else if .Values.services.proxyHttp.enabled }}
               port: proxy-http
               {{- end }}
-            initialDelaySeconds: 5
-            periodSeconds: 10
+            initialDelaySeconds: {{ .Values.probes.signserver.liveness.initialDelaySeconds | default 5 }}
+            periodSeconds: {{ .Values.probes.signserver.liveness.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.probes.signserver.liveness.timeoutSeconds | default 1 }}
+            failureThreshold: {{ .Values.probes.signserver.liveness.failureThreshold | default 3 }}
           readinessProbe:
             httpGet:
-              path: /signserver/healthcheck/signserverhealth
+              path: /signserver/healthcheck/signserverhealth?workerId=none
               {{- if .Values.services.directHttp.enabled }}
               port: http
               {{- else if .Values.services.proxyAJP.enabled }}
@@ -114,8 +117,10 @@ spec:
               {{- else if .Values.services.proxyHttp.enabled }}
               port: proxy-http
               {{- end }}
-            initialDelaySeconds: 5
-            periodSeconds: 10
+            initialDelaySeconds: {{ .Values.probes.signserver.readiness.initialDelaySeconds | default 5 }}
+            periodSeconds: {{ .Values.probes.signserver.readiness.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.probes.signserver.readiness.timeoutSeconds | default 1 }}
+            failureThreshold: {{ .Values.probes.signserver.readiness.failureThreshold | default 3 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
