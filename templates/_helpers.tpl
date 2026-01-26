@@ -22,6 +22,13 @@ Define the SignServer deployment parameters
 - name: ALLOW_ANY
   value: "true"
 {{- end }}
+{{- if hasKey .Values.signserver "allowAnyEnabled" }}
+- name: ALLOW_ANY_ENABLED
+  value: {{ .Values.signserver.allowAnyEnabled | quote }}
+{{- else }}
+- name: ALLOW_ANY_ENABLED
+  value: "true"
+{{- end }}
 {{- if .Values.signserver.useP11NgAsP11 }}
 - name: USE_P11NG_AS_P11
   value: "true"

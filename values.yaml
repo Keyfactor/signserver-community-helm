@@ -4,6 +4,7 @@
 
 signserver:
   allowAny: false
+  #allowAnyEnabled: true
   #useP11NgAsP11: true
   useEphemeralH2Database: true
   useH2Persistence: false
