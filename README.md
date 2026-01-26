@@ -304,28 +304,29 @@ Note that the samples prefix properties with `WORKERGENID1` which always creates
 
 ### SignServer Deployment Parameters
 
-| Name                                  | Description                                                                                                                                                | Default |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| signserver.allowAny                   | Provides access to AdminWeb. Change to true at first deployment for access. Should be changed back to false for restricted access to not be overwritten.   | false   |
-| signserver.useP11NgAsP11              | If set to false, do no back PKCS11CryptoToken by P11NG. If not set the default depends on the default in the current version of SignServer.                |         |
-| signserver.useEphemeralH2Database     | If in-memory internal H2 database should be used                                                                                                           | true    |
-| signserver.useH2Persistence           | If internal H2 database with persistence should be used. Requires existingH2PersistenceClaim to be set                                                     | false   |
-| signserver.existingH2PersistenceClaim | PersistentVolumeClaim that internal H2 database can use for data persistence                                                                               |         |
-| signserver.importAppserverKeystore    | If an existing keystore should be used for TLS configurations when reverse proxy is not used                                                               | false   |
-| signserver.appserverKeystoreSecret    | Secret containing keystore for TLS configuration of SignServer application server                                                                          |         |
-| signserver.importAppserverTruststore  | If an existing truststore should be used for TLS configurations when reverse proxy is not used                                                             | false   |
-| signserver.appserverTruststoreSecret  | Secret containing truststore for TLS configuration of SignServer application server                                                                        |         |
-| signserver.importWorkerProperties     | If properties files should be used to configure SignServer                                                                                                 | false   |
-| signserver.workerPropertiesSecret     | Secret containing properties files used for configuring SignServer at startup                                                                              |         |
-| signserver.importKeystores            | If keystore files should be mounted into the SignServer container                                                                                          | false   |
-| signserver.keystoresSecret            | Secret containing keystore files that can be used by SignServer workers                                                                                    |         |
-| signserver.keystoresMountPath         | Mount path in the SignServer container for mounted keystore files                                                                                          |         |
-| signserver.env                        | Environment variables to pass to container                                                                                                                 |         |
-| signserver.envRaw                     | Environment variables to pass to container in Kubernetes YAML format                                                                                       |         |
-| signserver.initContainers             | Extra init containers to be added to the deployment                                                                                                        | []      |
-| signserver.sidecarContainers          | Extra sidecar containers to be added to the deployment                                                                                                     | []      |
-| signserver.volumes                    | Extra volumes to be added to the deployment                                                                                                                | []      |
-| signserver.volumeMounts               | Extra volume mounts to be added to the deployment                                                                                                          | []      |
+| Name                                  | Description                                                                                                                                              | Default |
+|---------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| signserver.allowAny                   | Provides access to AdminWeb. Change to true at first deployment for access. Should be changed back to false for restricted access to not be overwritten. | false   |
+| signserver.useP11NgAsP11              | If set to false, do no back PKCS11CryptoToken by P11NG. If not set the default depends on the default in the current version of SignServer.              |         |
+| signserver.allowAnyEnabled            | If set to false, the value of Allow Any is treated as false, regardless of the database value and can't be modified besides using SignServer CLI.        | true    |
+| signserver.useEphemeralH2Database     | If in-memory internal H2 database should be used                                                                                                         | true    |
+| signserver.useH2Persistence           | If internal H2 database with persistence should be used. Requires existingH2PersistenceClaim to be set                                                   | false   |
+| signserver.existingH2PersistenceClaim | PersistentVolumeClaim that internal H2 database can use for data persistence                                                                             |         |
+| signserver.importAppserverKeystore    | If an existing keystore should be used for TLS configurations when reverse proxy is not used                                                             | false   |
+| signserver.appserverKeystoreSecret    | Secret containing keystore for TLS configuration of SignServer application server                                                                        |         |
+| signserver.importAppserverTruststore  | If an existing truststore should be used for TLS configurations when reverse proxy is not used                                                           | false   |
+| signserver.appserverTruststoreSecret  | Secret containing truststore for TLS configuration of SignServer application server                                                                      |         |
+| signserver.importWorkerProperties     | If properties files should be used to configure SignServer                                                                                               | false   |
+| signserver.workerPropertiesSecret     | Secret containing properties files used for configuring SignServer at startup                                                                            |         |
+| signserver.importKeystores            | If keystore files should be mounted into the SignServer container                                                                                        | false   |
+| signserver.keystoresSecret            | Secret containing keystore files that can be used by SignServer workers                                                                                  |         |
+| signserver.keystoresMountPath         | Mount path in the SignServer container for mounted keystore files                                                                                        |         |
+| signserver.env                        | Environment variables to pass to container                                                                                                               |         |
+| signserver.envRaw                     | Environment variables to pass to container in Kubernetes YAML format                                                                                     |         |
+| signserver.initContainers             | Extra init containers to be added to the deployment                                                                                                      | []      |
+| signserver.sidecarContainers          | Extra sidecar containers to be added to the deployment                                                                                                   | []      |
+| signserver.volumes                    | Extra volumes to be added to the deployment                                                                                                              | []      |
+| signserver.volumeMounts               | Extra volume mounts to be added to the deployment                                                                                                        | []      |
 
 ### SignServer Environment Variables
 
