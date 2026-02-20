@@ -300,6 +300,44 @@ Sample properties files for different types of workers are available in the [Sig
 
 Note that the samples prefix properties with `WORKERGENID1` which always creates a new worker. In order to handle container restarts, exact worker ID should be used like in the example above. This way the worker is created if it does not already exist, otherwise properties are applied to the existing worker with that ID.
 
+### Customizing SignServer default deploy properties
+
+To customize the default deploy properties in your SignServer deployment, follow these steps:
+
+1. **Copy and modify the default configuration file**
+
+   Obtain the default `signserver_deploy.properties` file from [container/conf/signserver_deploy.properties](https://gitlab.keyfactoreng.com/signserver/signserver/-/blob/main/container/conf/signserver_deploy.properties?ref_type=heads) and modify as needed.
+
+2. **Create a ConfigMap with your custom properties file**
+
+   ```shell
+   kubectl create configmap custom-signserver-deploy-properties --from-file=/path/to/signserver_deploy.properties
+   ```
+
+3. **Update your values.yaml to mount the ConfigMap**
+
+   Add the following configuration to mount the custom deploy properties file into the SignServer container:
+
+   ```yaml
+   signserver:
+     volumes:
+       - name: signserver-deploy-properties
+         configMap:
+           name: custom-signserver-deploy-properties
+     volumeMounts:
+       - name: signserver-deploy-properties
+         mountPath: /opt/keyfactor/signserver-custom/conf/signserver_deploy.properties
+         subPath: signserver_deploy.properties
+   ```
+
+4. **Upgrade your deployment**
+
+   Apply the changes using Helm:
+
+   ```shell
+   helm upgrade signserver signserver-ce --namespace signserver --values signserver.yaml
+   ```
+   
 ## Parameters
 
 ### SignServer Deployment Parameters
