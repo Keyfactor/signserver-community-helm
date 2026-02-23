@@ -5,6 +5,12 @@
 signserver:
   allowAny: false
   #allowAnyEnabled: true
+  #allowedHostnames: []
+  #allowedHostnames:
+  # - localhost
+  # - localhost:8080
+  # - localhost:8443
+  # - service.example.org
   #useP11NgAsP11: true
   useEphemeralH2Database: true
   useH2Persistence: false

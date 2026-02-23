@@ -307,6 +307,7 @@ Note that the samples prefix properties with `WORKERGENID1` which always creates
 | Name                                  | Description                                                                                                                                              | Default |
 |---------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
 | signserver.allowAny                   | Provides access to AdminWeb. Change to true at first deployment for access. Should be changed back to false for restricted access to not be overwritten. | false   |
+| signserver.allowedHostnames           | Enable allow listed hosts filter by specifying hosts and ports that should only be allowed when sending HTTP requests to SignServer.                     |         |
 | signserver.useP11NgAsP11              | If set to false, do no back PKCS11CryptoToken by P11NG. If not set the default depends on the default in the current version of SignServer.              |         |
 | signserver.allowAnyEnabled            | If set to false, the value of Allow Any is treated as false, regardless of the database value and can't be modified besides using SignServer CLI.        | true    |
 | signserver.useEphemeralH2Database     | If in-memory internal H2 database should be used                                                                                                         | true    |
