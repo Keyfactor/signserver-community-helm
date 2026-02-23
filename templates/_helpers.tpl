@@ -37,6 +37,10 @@ Define the SignServer deployment parameters
 - name: USE_P11NG_AS_P11
   value: "false"
 {{- end }}
+{{- if hasKey .Values.signserver "allowedHostnames" }}
+- name: ALLOWED_HOSTNAMES
+  value: {{ .Values.signserver.allowedHostnames | join "," }}
+{{- end }}
 {{- end }}
 
 {{/*

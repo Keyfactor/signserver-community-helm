@@ -89,6 +89,11 @@ spec:
               {{- else if .Values.services.proxyHttp.enabled }}
               port: proxy-http
               {{- end }}
+              {{- if and (hasKey .Values.signserver "allowedHostnames") (not (empty .Values.signserver.allowedHostnames)) }}
+              httpHeaders:
+                - name: Host
+                  value: {{ first .Values.signserver.allowedHostnames }}
+              {{- end }}
             initialDelaySeconds: {{ .Values.probes.signserver.startup.initialDelaySeconds | default 20 }}
             periodSeconds: {{ .Values.probes.signserver.startup.periodSeconds | default 10 }}
             timeoutSeconds: {{ .Values.probes.signserver.startup.timeoutSeconds | default 1 }}
@@ -103,6 +108,11 @@ spec:
               {{- else if .Values.services.proxyHttp.enabled }}
               port: proxy-http
               {{- end }}
+              {{- if and (hasKey .Values.signserver "allowedHostnames") (not (empty .Values.signserver.allowedHostnames)) }}
+              httpHeaders:
+                - name: Host
+                  value: {{ first .Values.signserver.allowedHostnames }}
+              {{- end }}
             initialDelaySeconds: {{ .Values.probes.signserver.liveness.initialDelaySeconds | default 5 }}
             periodSeconds: {{ .Values.probes.signserver.liveness.periodSeconds | default 10 }}
             timeoutSeconds: {{ .Values.probes.signserver.liveness.timeoutSeconds | default 1 }}
@@ -116,6 +126,11 @@ spec:
               port: ajp
               {{- else if .Values.services.proxyHttp.enabled }}
               port: proxy-http
+              {{- end }}
+              {{- if and (hasKey .Values.signserver "allowedHostnames") (not (empty .Values.signserver.allowedHostnames)) }}
+              httpHeaders:
+                - name: Host
+                  value: {{ first .Values.signserver.allowedHostnames }}
               {{- end }}
             initialDelaySeconds: {{ .Values.probes.signserver.readiness.initialDelaySeconds | default 5 }}
             periodSeconds: {{ .Values.probes.signserver.readiness.periodSeconds | default 10 }}
