@@ -25,6 +25,22 @@ signserver:
   #keystoresSecret: signer-keystores-secret
   #keystoresMountPath: /mnt/external
   #env:
+  #   OIDC_CLIENTID: "xxxxxxclient-idxxxxxxxxxxxxxx"
+  #   # It is recommended to define OIDC_CLIENTSECRET in envRaw using secretKeyRef.
+  #   # OIDC_CLIENTSECRET: "xxxxxxclient-secretxxxxxxxxxxxxxx"
+  #   OIDC_PROVIDERURI: "https://dev-xxxxxxxxxxxxxxxx.us.auth0.com/"
+  #   OIDC_PROVIDERLOGOUTURI: "https://dev-xxxxxxxxxxxxxxxx.us.auth0.com/v2/logout"
+  #   OIDC_LOGOUTURI: "https://minikube.local/signserver"
+  #   OIDC_REDIRECTURI: "https://minikube.local/signserver/adminweb/workers.xhtml"
+  #   OIDC_LOGINURI: "https://minikube.local/signserver/adminweb/callback"
+  #   OIDC_CALLERGROUPSCLAIM: "kf.roles"
+  #   OIDC_AUDIENCE: "xxxxxxclient-idxxxxxxxxxxxxxx"
+  #envRaw:
+  #  - name: OIDC_CLIENTSECRET
+  #    valueFrom:
+  #      secretKeyRef:
+  #        name: oidc-secret
+  #        key: client-secret
   #envRaw:
   #  - name: DATABASE_PASSWORD
   #    valueFrom:

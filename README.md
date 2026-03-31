@@ -337,7 +337,55 @@ To customize the default deploy properties in your SignServer deployment, follow
    ```shell
    helm upgrade signserver signserver-ce --namespace signserver --values signserver.yaml
    ```
-   
+### Configuring SignServer OIDC properties
+
+To configure the OIDC settings in your SignServer deployment, follow these steps:
+
+1. **Create or modify the OIDC properties file**
+
+   Prepare the `oidc.properties` file with the desired OIDC settings.
+
+2. **Create a ConfigMap with the properties file**
+
+   ```shell
+   kubectl create configmap signserver-oidc-properties --from-file=oidc.properties=/path/to/oidc.properties
+   ```
+
+3. **Update your values.yaml to mount the ConfigMap**
+
+   Add the following configuration to mount the OIDC properties file into the SignServer container:
+
+   ```yaml
+   signserver:
+     volumes:
+       - name: signserver-oidc-properties
+         configMap:
+           name: signserver-oidc-properties
+     volumeMounts:
+       - name: signserver-oidc-properties
+         mountPath: /opt/keyfactor/signserver/conf/oidc.properties
+         subPath: oidc.properties
+   ```
+
+4. **Upgrade your deployment**
+
+   Apply the changes using Helm:
+
+   ```shell
+   helm upgrade signserver signserver-ce --namespace signserver --values signserver.yaml
+   ```
+
+#### Notes
+
+- The file is mounted as `oidc.properties` in the container.
+- You can add this mount alongside other configuration mounts.
+- Keep sensitive OIDC values in Kubernetes secrets where possible, and reference them from the properties file or environment variables as appropriate.
+
+### OIDC Configuration via environment variables
+
+OIDC environment variables can be used to configure OpenID Connect authentication for SignServer through Helm values. These variables can be set in `signserver.env`, while sensitive values such as the client secret should preferably be provided through `envRaw` using a Kubernetes secret.
+
+OIDC environment variables can be used alongside a mapped `oidc.properties` file. Values defined through Helm environment variables take precedence over values in the mapped `oidc.properties` file and overwrite them when both are present.
 ## Parameters
 
 ### SignServer Deployment Parameters
@@ -388,6 +436,20 @@ To customize the default deploy properties in your SignServer deployment, follow
 | signserver.env.JAVA_OPTS_CUSTOM              | Allows you to override the default JAVA_OPTS that are set in the standalone.conf                                                                                                                           |         |
 | signserver.env.PROXY_AJP_BIND                | Run container with an AJP proxy port :8009 bound to the IP address in this variable, e.g. PROXY_AJP_BIND=0.0.0.0                                                                                           |         |
 | signserver.env.PROXY_HTTP_BIND               | Run container with two HTTP back-end proxy ports :8081 and :8082 configured bound to the IP address in this variable. Port 8082 will accepts the SSL_CLIENT_CERT HTTP header, e.g. PROXY_HTTP_BIND=0.0.0.0 |         |
+
+#### OIDC Environment Variables
+
+| Name                                  | Description                                                                 | Default |
+|---------------------------------------| --------------------------------------------------------------------------- | ------- |
+| signserver.env.OIDC_CLIENTID          | OIDC client ID used by SignServer                                            |         |
+| signserver.env.OIDC_CLIENTSECRET      | OIDC client secret. Prefer setting this via `envRaw` and a Kubernetes secret |         |
+| signserver.env.OIDC_PROVIDERURI       | Base URI of the OIDC provider                                               |         |
+| signserver.env.OIDC_PROVIDERLOGOUTURI | OIDC provider logout endpoint                                               |         |
+| signserver.env.OIDC_LOGOUTURI         | SignServer logout redirect URI                                               |         |
+| signserver.env.OIDC_REDIRECTURI       | OIDC redirect URI used after successful authentication                        |         |
+| signserver.env.OIDC_LOGINURI          | OIDC login/callback URI                                                        |         |
+| signserver.env.OIDC_CALLERGROUPSCLAIM | Claim name containing the caller's groups/roles                               |         |
+| signserver.env.OIDC_AUDIENCE          | OIDC audience value                                                          |         |
 
 ### Services Parameters
 
