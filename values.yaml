@@ -150,3 +150,18 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+configMaps:
+  # Values-based data for a configmap
+  inline: {}
+  # File-based data for a configmap. Place the file in a directory i.e., config/
+  files: {}
+  #inline:
+  #  example-config:
+  #    name: example-inline-config
+  #    data:
+  #      inline-data.properties: |
+  #        property1 = value1
+  #        property2 = value2
+  #  files:
+  #    test.properties: config/test.properties
