@@ -1,5 +1,4 @@
-{{/*Support for values-based configuration*/}}
-{{- with .Values.configMaps.inline }}
+{{- with .Values.configMaps }}
 {{- range $cmName, $cm := . }}
 apiVersion: v1
 kind: ConfigMap
@@ -13,19 +12,3 @@ data:
 ---
 {{- end }}
 {{- end }}
-
-{{/*Support for file-based configuration*/}}
-{{- with .Values.configMaps.files }}
-{{- range $name, $path := . }}
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ $name }}
-data:
-  {{ $name }}: |-
-{{ $.Files.Get $path | nindent 4 }}
-{{- end }}
-{{- end }}
-
-
-
