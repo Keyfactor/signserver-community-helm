@@ -151,16 +151,13 @@ tolerations: []
 
 affinity: {}
 
-configMaps: {}
-   # example-config:
-   #   name: example-inline-config
+configMaps: []
+   # - name: signserver-deploy-properties
    #   data:
-   #     inline-data.properties: |
-   #       property1 = value1
-   #       property2 = value2
+   #     signserver_deploy.properties: |
+   #       keystorecryptotoken.keystore.path.allowed.0=/opt/
 
-secrets: {}
-  # example-secret:
-  #   name: secret-name
+secrets: []
+  # - name: secret-name
   #   data:
-  #     secret-key: secret-value
+  #     secret-key: |

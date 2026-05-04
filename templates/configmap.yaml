@@ -1,14 +1,12 @@
-{{- with .Values.configMaps }}
-{{- range $cmName, $cm := . }}
+{{- range .Values.configMaps }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ $cm.name }}
+  name: {{ .name }}
 data:
-{{- range $key, $val := $cm.data }}
+{{- range $key, $val := .data }}
   {{ $key }}: |-
 {{ $val | indent 4 }}
 {{- end }}
 ---
-{{- end }}
 {{- end }}
