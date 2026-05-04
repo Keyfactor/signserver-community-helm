@@ -166,3 +166,14 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+configMaps: []
+   # - name: signserver-deploy-properties
+   #   data:
+   #     signserver_deploy.properties: |
+   #       keystorecryptotoken.keystore.path.allowed.0=/opt/
+
+secrets: []
+  # - name: secret-name
+  #   data:
+  #     secret-key: |
