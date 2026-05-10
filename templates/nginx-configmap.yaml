@@ -1,0 +1,132 @@
+# Configuration for NGINX meant for cluster internal communication
+{{- if .Values.nginx.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "signserver-helm.fullname" . }}-nginx-config
+data:
+  {{- if .Values.nginx.externalConfiguration }}
+  nginx.conf: {{- tpl (.Values.nginx.externalConfiguration | toYaml | indent 1) . }}
+  {{- else }}
+  nginx.conf: |
+    user  nginx;
+    worker_processes  1;
+    error_log  /var/log/nginx/error.log warn;
+    pid        /var/run/nginx.pid;
+    events {
+        worker_connections  1024;
+    }
+    http {
+      include       /etc/nginx/mime.types;
+      default_type  application/octet-stream;
+      log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                          '$ssl_protocol/$ssl_cipher '
+                          '$status $body_bytes_sent "$http_referer" '
+                          '"$http_user_agent" "$http_x_forwarded_for"';
+      access_log  /var/log/nginx/access.log  main;
+      sendfile        on;
+      keepalive_timeout  65;
+      client_max_body_size 0;
+
+      {{- if .Values.nginx.service.httpPort }}
+      server {
+        listen 80;
+
+        server_name {{ .Values.nginx.host }};
+
+        location / {
+          proxy_pass http://localhost:8081;
+          proxy_redirect signserver/adminweb https://{{ .Values.nginx.host }}/signserver/adminweb;
+          proxy_redirect http://{{ .Values.nginx.host }}/signserver/adminweb https://{{ .Values.nginx.host }}/signserver/adminweb;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "Upgrade";
+          proxy_set_header Host $host;
+          proxy_set_header x-forwarded-proto "http";
+          proxy_http_version 1.1;
+        }
+      }
+      {{- end }}
+
+      server {
+        listen 443 ssl;
+
+        server_name {{ .Values.nginx.host }};
+
+        {{- if and .Values.nginx.initializeWithSelfSignedTls (not .Values.nginx.mountInternalNginxCert) }}
+
+          ssl_certificate /etc/nginx/ssl/pem/{{ .Values.nginx.host }}.pem;
+          ssl_certificate_key /etc/nginx/ssl/pem/{{ .Values.nginx.host }}-Key.pem;
+
+        {{- else }}
+        
+          ssl_verify_client optional;
+
+          ssl_certificate /etc/nginx/ssl/pem/{{ .Values.nginx.host }}.pem;
+          ssl_certificate_key /etc/nginx/ssl/pem/{{ .Values.nginx.host }}-Key.pem;
+          ssl_client_certificate /etc/nginx/ssl/pem/{{ .Values.nginx.host }}-CA.pem;
+
+        {{end}}
+
+        location / {
+          proxy_pass http://localhost:8082;
+          proxy_redirect http://{{ .Values.nginx.host }}/signserver/adminweb https://{{ .Values.nginx.host }}/signserver/adminweb;
+          proxy_set_header SSL_CLIENT_CERT $ssl_client_cert;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "upgrade";
+          proxy_set_header Host $host;
+          # Set this for Wildfly to return proper scheme for ACME. https://access.redhat.com/solutions/7037022
+          proxy_set_header x-forwarded-proto "https";
+          proxy_http_version 1.1;
+        }
+      }
+
+      {{- if .Values.nginx.additionalHosts }}
+      {{- range $i := .Values.nginx.additionalHosts }}
+
+      {{- if $.Values.nginx.service.httpPort }}
+      server {
+        listen 80;
+
+        server_name {{ $i }};
+
+        location / {
+          proxy_pass http://localhost:8081;
+          proxy_redirect signserver/adminweb https://{{ $i }}/signserver/adminweb;
+          proxy_redirect http://{{ $i }}/signserver/adminweb https://{{ $i }}/signserver/adminweb;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "Upgrade";
+          proxy_set_header Host $host;
+          proxy_set_header x-forwarded-proto "http";
+          proxy_http_version 1.1;
+        }
+      }
+      {{- end }}
+
+      server {
+        listen 443 ssl;
+        server_name {{ $i }};
+        
+        ssl_verify_client optional;
+
+        ssl_certificate /etc/nginx/ssl/pem/{{ $i }}.pem;
+        ssl_certificate_key /etc/nginx/ssl/pem/{{ $i }}-Key.pem;
+        ssl_client_certificate /etc/nginx/ssl/pem/{{ $i }}-CA.pem;
+
+        location / {
+          proxy_pass http://localhost:8082;
+          proxy_redirect http://{{ $i }}/signserver/adminweb https://{{ $i }}/signserver/adminweb;
+          proxy_set_header SSL_CLIENT_CERT $ssl_client_cert;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "upgrade";
+          proxy_set_header Host $host;
+          # Set this for Wildfly to return proper scheme for ACME. https://access.redhat.com/solutions/7037022
+          proxy_set_header x-forwarded-proto "https";
+          proxy_http_version 1.1;
+        }
+      }
+      {{end}}
+      {{end}}
+
+    }
+  {{- end }}
+{{- end }}

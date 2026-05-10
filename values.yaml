@@ -79,6 +79,27 @@ services:
   # are defined and need to expose ports
   sidecarPorts: []
 
+nginx:
+  image: nginx:1.27.1
+  enabled: false
+  initializeWithSelfSignedTls: false
+  host: "signserverhost"
+  externalConfiguration:
+  # Server TLS credential for cluster internal communication
+  mountInternalNginxCert: true
+  secretInternalNginxCert: "managementca-secret"
+  service:
+    type: LoadBalancer
+    bindIP: 0.0.0.0
+    httpPort: 80
+    httpsPort: 443
+  # only relevant if multiple replicas
+  loadBalancerAccess:
+    enableStickySessionClientIp: false
+    # create a load balancer service for each Pod with separate IP address
+    enableReplicaSpecificAccess: false
+  additionalHosts:
+
 # Requires proxyAJP or proxyHttp service to be enabled for adminweb access
 ingress:
   enabled: false
