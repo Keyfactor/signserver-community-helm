@@ -199,6 +199,20 @@ services:
     httpPort: 8081
     httpsPort: 8082
 ```
+### Configuring the built-in NGINX reverse proxy
+
+The chart can deploy an NGINX reverse proxy together with SignServer. This is useful when you want the Helm deployment itself to expose SignServer through an HTTPS reverse proxy, instead of relying on a separately managed ingress controller or external proxy.
+
+When enabled, the chart creates:
+
+- an NGINX sidecar container in the SignServer pod
+- an NGINX configuration ConfigMap
+- an NGINX Kubernetes Service
+- TLS certificate mounting for HTTPS traffic
+
+The NGINX proxy forwards traffic to SignServer using the proxy HTTP backend. For this reason, `services.proxyHttp.enabled` should be enabled and direct HTTP access should usually be disabled.
+
+Example configuration:
 
 ### Enabling Ingress in front of SignServer
 
