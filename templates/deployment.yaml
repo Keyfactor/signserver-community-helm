@@ -214,7 +214,7 @@ spec:
           configMap:
             name: {{ include "signserver-helm.fullname" . }}-nginx-config
         - name: nginx-cert
-        emptyDir: { }
+          emptyDir: { }
         {{- if .Values.nginx.mountInternalNginxCert }}
         - name: nginx-cert-provided
           secret:
@@ -261,4 +261,3 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      
