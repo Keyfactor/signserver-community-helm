@@ -199,6 +199,20 @@ services:
     httpPort: 8081
     httpsPort: 8082
 ```
+### Configuring the built-in NGINX reverse proxy
+
+The chart can deploy an NGINX reverse proxy together with SignServer. This is useful when you want the Helm deployment itself to expose SignServer through an HTTPS reverse proxy, instead of relying on a separately managed ingress controller or external proxy.
+
+When enabled, the chart creates:
+
+- an NGINX sidecar container in the SignServer pod
+- an NGINX configuration ConfigMap
+- an NGINX Kubernetes Service
+- TLS certificate mounting for HTTPS traffic
+
+The NGINX proxy forwards traffic to SignServer using the proxy HTTP backend. For this reason, `services.proxyHttp.enabled` should be enabled and direct HTTP access should usually be disabled.
+
+Example configuration:
 
 ### Enabling Ingress in front of SignServer
 
@@ -470,6 +484,23 @@ OIDC environment variables can be used alongside a mapped `oidc.properties` file
 | services.proxyHttp.httpsPort  | Service port for proxy HTTP communication that accepts SSL_CLIENT_CERT header                             | 8082      |
 | services.sidecarPorts         | Additional ports to expose in sidecar containers                                                          | []        |
 
+### NGINX Reverse Proxy Parameters
+
+| Name                                                 | Description                                                                 | Default             |
+|------------------------------------------------------|-----------------------------------------------------------------------------|---------------------|
+| nginx.enabled                                        | If the built-in NGINX reverse proxy should be deployed                      | false               |
+| nginx.image                                          | NGINX container image                                                       | nginx:1.27.1        |
+| nginx.host                                           | Hostname used by the NGINX reverse proxy configuration                      | signserverhost      |
+| nginx.initializeWithSelfSignedTls                    | If NGINX should generate a temporary self-signed TLS certificate at startup | false               |
+| nginx.mountInternalNginxCert                         | If an existing Kubernetes secret should be mounted as the NGINX TLS certificate | true             |
+| nginx.secretInternalNginxCert                        | Kubernetes secret containing the NGINX TLS certificate and private key      | managementca-secret |
+| nginx.service.type                                   | Kubernetes Service type for exposing NGINX                                  | LoadBalancer        |
+| nginx.service.bindIP                                 | Bind IP used by the NGINX service configuration                             | 0.0.0.0             |
+| nginx.service.httpPort                               | HTTP port exposed by the NGINX service                                      | 80                  |
+| nginx.service.httpsPort                              | HTTPS port exposed by the NGINX service                                     | 443                 |
+| nginx.loadBalancerAccess.enableStickySessionClientIp | Enable client IP based sticky sessions when using a load balancer           | false               |
+| nginx.loadBalancerAccess.enableReplicaSpecificAccess | Create a load balancer service for each pod when using multiple replicas    | false               |
+| nginx.additionalHosts      
 
 ### Ingress Parameters
 

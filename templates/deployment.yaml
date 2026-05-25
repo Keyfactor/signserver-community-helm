@@ -27,11 +27,54 @@ spec:
       serviceAccountName: {{ include "signserver-helm.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}  
-      {{- if .Values.signserver.initContainers }}
       initContainers:
-        {{- toYaml .Values.signserver.initContainers | nindent 8 }}
-      {{- end }}
+        {{- $proxyType := "" }}
+        {{- $proxyHost := "" }}
+        {{- if and .Values.nginx.enabled (not .Values.nginx.mountInternalNginxCert) (not .Values.nginx.initializeWithSelfSignedTls) }}
+          {{- $proxyType = "nginx" }}
+          {{- $proxyHost = .Values.nginx.host -}}
+        {{- end}}
+        {{- if .Values.signserver.initContainers }}
+          {{- toYaml .Values.signserver.initContainers | nindent 8 }}
+        {{- end }}
       containers:
+        {{- if .Values.nginx.enabled }}
+        - name: {{ .Chart.Name }}-nginx
+          image: {{ .Values.nginx.image }}
+          {{- if and .Values.nginx.initializeWithSelfSignedTls (not .Values.nginx.mountInternalNginxCert)}}
+          command:
+            - "/bin/bash"
+            - "-c"
+            - |
+              mkdir -p /etc/nginx/ssl/pem/
+              openssl req -x509 -newkey rsa:4096 -keyout /etc/nginx/ssl/pem/{{ .Values.nginx.host }}-Key.pem -out /etc/nginx/ssl/pem/{{ .Values.nginx.host }}.pem -sha256 -days 7 -nodes -subj '/CN={{ .Values.nginx.host }}-selfsigned'
+              nginx -g "daemon off;"
+          {{- end }}
+          ports:
+          {{- if .Values.nginx.service.httpPort }}
+            - name: nginx-http
+              containerPort: 80
+          {{- end }}
+            - name: nginx-https
+              containerPort: 443
+          startupProbe:
+            tcpSocket:
+              port: 443
+          livenessProbe:
+            tcpSocket:
+              port: 443
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            {{- if .Values.nginx.mountInternalNginxCert }}
+            - name: nginx-cert-provided
+              mountPath: /etc/nginx/ssl/pem/
+            {{- else }}
+            - name: nginx-cert
+              mountPath: /etc/nginx/ssl/
+            {{- end }}
+        {{- end }}
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
@@ -166,6 +209,18 @@ spec:
             {{- toYaml .Values.signserver.sidecarContainers | nindent 8 }}
           {{- end }}
       volumes:
+        {{- if .Values.nginx.enabled }}
+        - name: nginx-config
+          configMap:
+            name: {{ include "signserver-helm.fullname" . }}-nginx-config
+        - name: nginx-cert
+          emptyDir: { }
+        {{- if .Values.nginx.mountInternalNginxCert }}
+        - name: nginx-cert-provided
+          secret:
+            secretName: {{ .Values.nginx.secretInternalNginxCert }}
+        {{- end }}
+        {{- end }}
         {{- if .Values.signserver.useH2Persistence }}
         - name: signserver-h2-persistence
           persistentVolumeClaim:
