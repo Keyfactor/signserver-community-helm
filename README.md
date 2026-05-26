@@ -214,7 +214,12 @@ The NGINX proxy forwards traffic to SignServer using the proxy HTTP backend. For
 
 Example configuration:
 
+
 ### Enabling Ingress in front of SignServer
+
+> **Enabling Ingress NGINX in front of SignServer is not recommended**
+> 
+> Due to Ingress NGINX retirement notice, we recommend to use the built-in NGINX reverse proxy instead.
 
 Ingress is a Kubernetes native way of exposing HTTP and HTTPS routes from outside to Kubernetes services.
 
