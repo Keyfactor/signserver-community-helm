@@ -1,0 +1,74 @@
+stages:
+  - validate
+  - package
+  - publish
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_REF_NAME == "fb-DSS-3823-introduce-pipeline" #testing purposes
+    - if: $CI_COMMIT_TAG
+    - when: never
+
+variables:
+  JFROG_REGISTRY: $CI_REGISTRY_NAME
+  JFROG_USERNAME: $CI_REGISTRY_USER
+  JFROG_PASSWORD: $CI_REGISTRY_PASSWORD
+
+.helm-job:
+  image:
+    name: keyfactor.jfrog.io/dockerhub/alpine/kubectl:1.36.1@sha256:3a93d1df6d837839b5f26b38af263b4cfd60ffaa3e0084a06bb517b0a85737ef
+    #keyfactor.jfrog.io/dockerhub-cache/library/alpine/3.22/
+    # :1.36.1@sha256:3a93d1df6d837839b5f26b38af263b4cfd60ffaa3e0084a06bb517b0a85737ef
+  before_script:
+    - echo "Setting up Helm"
+    - apk add helm
+    - echo "Setting up Make"
+    - apk add make
+
+.package-helm:
+  extends: .helm-job
+  stage: package
+  script:
+    - make "$MAKE_TARGET"
+  artifacts:
+    paths:
+      - "$ARTIFACT_PATH"
+
+.publish-helm:
+  extends: .helm-job
+  stage: publish
+  script:
+    - helm registry login "$JFROG_REGISTRY" --username "$JFROG_USERNAME" --password "$JFROG_PASSWORD"
+    - make "$MAKE_TARGET"
+
+package-helm-ee:
+  extends: .package-helm
+  variables:
+    MAKE_TARGET: package-helm-ee
+    ARTIFACT_PATH: signserver-*.tgz
+
+package-helm-ce:
+  extends: .package-helm
+  when: manual
+  variables:
+    MAKE_TARGET: package-helm-ce
+    ARTIFACT_PATH: signserver-ce-*.tgz
+
+publish-helm-ee:
+  extends: .publish-helm
+  when: manual
+  needs:
+    - job: package-helm-ee
+      artifacts: true
+  variables:
+    MAKE_TARGET: publish-helm-ee
+
+publish-helm-ce:
+  extends: .publish-helm
+  when: manual
+  needs:
+    - job: package-helm-ce
+      artifacts: true
+  variables:
+    MAKE_TARGET: publish-helm-ce
