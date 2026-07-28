@@ -128,7 +128,7 @@ spec:
               {{- if .Values.services.directHttp.enabled }}
               port: http
               {{- else if .Values.services.proxyAJP.enabled }}
-              port: ajp
+              port: 80
               {{- else if .Values.services.proxyHttp.enabled }}
               port: proxy-http
               {{- end }}
@@ -147,7 +147,7 @@ spec:
               {{- if .Values.services.directHttp.enabled }}
               port: http
               {{- else if .Values.services.proxyAJP.enabled }}
-              port: ajp
+              port: 80
               {{- else if .Values.services.proxyHttp.enabled }}
               port: proxy-http
               {{- end }}
@@ -166,7 +166,7 @@ spec:
               {{- if .Values.services.directHttp.enabled }}
               port: http
               {{- else if .Values.services.proxyAJP.enabled }}
-              port: ajp
+              port: 80
               {{- else if .Values.services.proxyHttp.enabled }}
               port: proxy-http
               {{- end }}
