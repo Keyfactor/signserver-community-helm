@@ -15,19 +15,22 @@ variables:
   JFROG_USERNAME: $CI_REGISTRY_USER
   JFROG_PASSWORD: $CI_REGISTRY_PASSWORD
 
-.helm-job:
+default:
   image:
-    name: keyfactor.jfrog.io/dockerhub/alpine/kubectl:1.36.1@sha256:3a93d1df6d837839b5f26b38af263b4cfd60ffaa3e0084a06bb517b0a85737ef
-    #keyfactor.jfrog.io/dockerhub-cache/library/alpine/3.22/
-    # :1.36.1@sha256:3a93d1df6d837839b5f26b38af263b4cfd60ffaa3e0084a06bb517b0a85737ef
+    name: keyfactor.jfrog.io/dockerhub/library/alpine:3.22@sha256:14358309a308569c32bdc37e2e0e9694be33a9d99e68afb0f5ff33cc1f695dce
   before_script:
     - echo "Setting up Helm"
-    - apk add helm
+    - apk add --no-cache helm
     - echo "Setting up Make"
     - apk add make
 
+validate-chart:
+  stage: validate
+  script:
+    - helm lint . --debug
+
 .package-helm:
-  extends: .helm-job
+  extends: .default
   stage: package
   script:
     - make "$MAKE_TARGET"
@@ -36,7 +39,7 @@ variables:
       - "$ARTIFACT_PATH"
 
 .publish-helm:
-  extends: .helm-job
+  extends: .default
   stage: publish
   script:
     - helm registry login "$JFROG_REGISTRY" --username "$JFROG_USERNAME" --password "$JFROG_PASSWORD"
@@ -72,3 +75,5 @@ publish-helm-ce:
       artifacts: true
   variables:
     MAKE_TARGET: publish-helm-ce
+
+
