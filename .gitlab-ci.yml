@@ -17,10 +17,12 @@ variables:
   JFROG_PASSWORD: $CI_REGISTRY_PASSWORD
 
 default:
+#  image:
+#    name: keyfactor.jfrog.io/dockerhub/library/alpine:3.22@sha256:14358309a308569c32bdc37e2e0e9694be33a9d99e68afb0f5ff33cc1f695dce
   image:
-    name: keyfactor.jfrog.io/dockerhub/library/alpine:3.22@sha256:14358309a308569c32bdc37e2e0e9694be33a9d99e68afb0f5ff33cc1f695dce
-  tags:
-    - ci-prod
+    name: keyfactor.jfrog.io/dev-oci/emea-dev-infra/gitops-runner:0.13.0@sha256:f7582d1c4258b78cee9fed7fc104326a08ba753bc91b05577c7a770b8adfa52b
+#  tags:
+#    - ci-prod
   before_script:
     - echo "Setting up Helm"
     - apk add helm
@@ -29,6 +31,11 @@ default:
 
 lint-chart:
   stage: lint
+  image:
+    name: keyfactor.jfrog.io/dev-oci/emea-dev-infra/gitops-runner:0.13.0@sha256:f7582d1c4258b78cee9fed7fc104326a08ba753bc91b05577c7a770b8adfa52b
+  before_script:
+    - apk add helm
+    - apk add make
   script:
     - helm lint . --debug
 
