@@ -30,7 +30,6 @@ validate-chart:
     - helm lint . --debug
 
 .package-helm:
-  extends: .default
   stage: package
   script:
     - make "$MAKE_TARGET"
@@ -39,7 +38,6 @@ validate-chart:
       - "$ARTIFACT_PATH"
 
 .publish-helm:
-  extends: .default
   stage: publish
   script:
     - helm registry login "$JFROG_REGISTRY" --username "$JFROG_USERNAME" --password "$JFROG_PASSWORD"
