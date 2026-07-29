@@ -56,7 +56,8 @@ package-helm-ce:
 .publish-helm:
   stage: publish
   script:
-    - helm registry login "$JFROG_REGISTRY" --username "$JFROG_USERNAME" --password "$JFROG_PASSWORD"
+    - echo "Publishing chart to registry $CI_REGISTRY with username $CI_REGISTRY_USER"
+    - $CI_REGISTRY_PASSWORD | helm registry login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - make "$MAKE_TARGET"
 
 publish-helm-ee:
