@@ -15,7 +15,7 @@ variables:
   JFROG_USERNAME: $CI_REGISTRY_USER
   JFROG_PASSWORD: $CI_REGISTRY_PASSWORD
 
-default:
+.prepare-env:
   image:
     name: keyfactor.jfrog.io/dockerhub/library/alpine:3.22@sha256:14358309a308569c32bdc37e2e0e9694be33a9d99e68afb0f5ff33cc1f695dce
   before_script:
@@ -25,11 +25,13 @@ default:
     - apk add make
 
 validate-chart:
+  extends: .prepare-env
   stage: validate
   script:
     - helm lint . --debug
 
 .package-helm:
+  extends: .prepare-env
   stage: package
   script:
     - make "$MAKE_TARGET"
@@ -38,6 +40,7 @@ validate-chart:
       - "$ARTIFACT_PATH"
 
 .publish-helm:
+  extends: .prepare-env
   stage: publish
   script:
     - helm registry login "$JFROG_REGISTRY" --username "$JFROG_USERNAME" --password "$JFROG_PASSWORD"
