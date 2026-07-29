@@ -5,7 +5,6 @@ CURRENT_DIR := $(shell pwd)
 CHART_BASE_VERSION := $(shell grep '^version:' Chart.yaml | awk '{print $$2}')
 GIT_TAG ?=
 COMMIT_SHORT_SHA ?=
-FINAL_CHART_VERSION ?=
 
 EE_APPVERSION := 7.8.0
 EE_DOCKER_REPO := repo.keyfactor.com/images/signserver-ee
@@ -41,12 +40,11 @@ package-helm-ee: ## Package the EE Helm chart.
 	sed -i 's/^name: .*/name: signserver/' Chart.yaml
 	sed -i '/^annotations:/,$$d' $(CURRENT_DIR)/Chart.yaml
 	sed -i 's|repository: keyfactor/signserver-ce|repository: $(EE_DOCKER_REPO)|' $(CURRENT_DIR)/values.yaml
+    FINAL_CHART_VERSION="$(CHART_BASE_VERSION)"
 	if [ -n "$(GIT_TAG)" ] && [ "$(GIT_TAG)" != "$(CHART_BASE_VERSION)" ]; then \
   		echo "ERROR: Git tag does not match the version in Chart.yaml"; \
   		echo "Chart base version: $(CHART_BASE_VERSION), GIT_TAG= $(GIT_TAG)"; \
   		exit 1; \
-  	else \
-  		FINAL_CHART_VERSION="$(CHART_BASE_VERSION)"; \
   	fi;
 	if [ -z "$(GIT_TAG)" ] && [ -z "$(COMMIT_SHORT_SHA)" ]; then \
   		echo "ERROR: COMMIT_SHORT_SHA is missing"; \
@@ -55,8 +53,8 @@ package-helm-ee: ## Package the EE Helm chart.
   	elif [ -z "$(GIT_TAG)" ] && [ -n "$(COMMIT_SHORT_SHA)" ]; then \
 		FINAL_CHART_VERSION="$(CHART_BASE_VERSION)-$(COMMIT_SHORT_SHA)"; \
   	fi;
-	echo "Final Chart version: $$(FINAL_CHART_VERSION)";
-	helm package --version $$(FINAL_CHART_VERSION) --app-version $(EE_APPVERSION) $(CURRENT_DIR)
+	echo "Final Chart version: $$FINAL_CHART_VERSION"
+	helm package --version $$FINAL_CHART_VERSION --app-version $(EE_APPVERSION) $(CURRENT_DIR)
 
 .PHONY: publish-helm-ce
 publish-helm-ce: ## Publish the CE Helm chart to the OCI registry.

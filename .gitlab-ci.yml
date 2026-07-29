@@ -56,8 +56,8 @@ package-helm-ee:
       elif [[ $CI_COMMIT_REF_NAME == "fb-DSS-3823-introduce-pipeline" ]]; then 
         COMMIT_SHORT_SHA=$CI_COMMIT_SHORT_SHA
       fi
-    - echo "Building chart with tag $(GIT_TAG) and commit short SHA $COMMIT_SHORT_SHA"
-    - make "$MAKE_TARGET" GIT_TAG=$GIT_TAG COMMIT_SHORT_SHA=$COMMIT_SHORT_SHA
+    - echo "Building chart with tag $GIT_TAG and commit short SHA $COMMIT_SHORT_SHA"
+    - make "$MAKE_TARGET" GIT_TAG="$GIT_TAG" COMMIT_SHORT_SHA="$COMMIT_SHORT_SHA"
   rules:
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH || $CI_PIPELINE_SOURCE == "merge_request_event"
