@@ -33,6 +33,9 @@ lint-chart:
 
 .package-helm:
   stage: package
+  needs:
+    - job: lint-chart
+      artifacts: false
   script:
     - make "$MAKE_TARGET"
   artifacts:
