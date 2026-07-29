@@ -41,6 +41,7 @@ package-helm-ee: ## Package the EE Helm chart.
 	sed -i '/^annotations:/,$$d' $(CURRENT_DIR)/Chart.yaml
 	sed -i 's|repository: keyfactor/signserver-ce|repository: $(EE_DOCKER_REPO)|' $(CURRENT_DIR)/values.yaml
 	FINAL_CHART_VERSION="$(CHART_BASE_VERSION)"
+	echo "GIT_TAG= $(GIT_TAG) and COMMIT_SHORT_SHA= $(COMMIT_SHORT_SHA)"
 	if [ -n "$(GIT_TAG)" ] && [ "$(GIT_TAG)" != "$(CHART_BASE_VERSION)" ]; then \
   		echo "ERROR: Git tag does not match the version in Chart.yaml"; \
   		echo "Chart base version: $(CHART_BASE_VERSION), GIT_TAG= $(GIT_TAG)"; \
