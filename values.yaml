@@ -129,7 +129,7 @@ ingress:
 replicaCount: 1
 
 image:
-  repository: keyfactor/signserver-ce
+  repository: repo.keyfactor.com/images/signserver-ee
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion
   #tag: latest
