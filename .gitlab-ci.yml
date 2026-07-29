@@ -1,5 +1,5 @@
 stages:
-  - validate
+  - lint
   - package
   - publish
 
@@ -23,29 +23,29 @@ variables:
     - ci-prod
   before_script:
     - echo "Setting up Helm"
-    - apk add --no-cache helm
+    - apk add helm
     - echo "Setting up Make"
     - apk add make
 
-validate-chart:
-  stage: validate
-  image:
-    name: keyfactor.jfrog.io/dockerhub/library/alpine:3.22@sha256:14358309a308569c32bdc37e2e0e9694be33a9d99e68afb0f5ff33cc1f695dce
-  tags:
-    - ci-prod
-  script:
-    - echo "Setting up Helm"
-    - apk add --no-cache helm
-    - helm lint . --debug
-
-#.package-helm:
-#  extends: .prepare-env
-#  stage: package
+#lint-chart:
+#  stage: lint
+#  image:
+#    name: keyfactor.jfrog.io/dockerhub/library/alpine:3.22@sha256:14358309a308569c32bdc37e2e0e9694be33a9d99e68afb0f5ff33cc1f695dce
+#  tags:
+#    - ci-prod
 #  script:
-#    - make "$MAKE_TARGET"
-#  artifacts:
-#    paths:
-#      - "$ARTIFACT_PATH"
+#    - echo "Setting up Helm"
+#    - apk add helm
+#    - helm lint . --debug
+
+.package-helm:
+  extends: .prepare-env
+  stage: package
+  script:
+    - make "$MAKE_TARGET"
+  artifacts:
+    paths:
+      - "$ARTIFACT_PATH"
 #
 #.publish-helm:
 #  extends: .prepare-env
@@ -54,11 +54,11 @@ validate-chart:
 #    - helm registry login "$JFROG_REGISTRY" --username "$JFROG_USERNAME" --password "$JFROG_PASSWORD"
 #    - make "$MAKE_TARGET"
 #
-#package-helm-ee:
-#  extends: .package-helm
-#  variables:
-#    MAKE_TARGET: package-helm-ee
-#    ARTIFACT_PATH: signserver-*.tgz
+package-helm-ee:
+  extends: .package-helm
+  variables:
+    MAKE_TARGET: package-helm-ee
+    ARTIFACT_PATH: signserver-*.tgz
 #
 #package-helm-ce:
 #  extends: .package-helm
