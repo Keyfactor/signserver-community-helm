@@ -8,7 +8,7 @@ COMMIT_SHORT_SHA ?=
 
 EE_APPVERSION := 7.8.0
 EE_DOCKER_REPO := repo.keyfactor.com/images/signserver-ee
-DEV_OCI_STORAGE_DSS := oci://keyfactor.jfrog.io/dev-oci-storage-dss/signserver/signserver/charts/
+DEV_OCI_STORAGE_DSS := oci://keyfactor.jfrog.io/dev-oci/signserver/signserver/charts
 
 .PHONY: help
 help:
