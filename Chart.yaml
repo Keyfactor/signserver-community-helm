@@ -2,7 +2,7 @@ apiVersion: v2
 name: signserver-ce
 description: A Helm chart for running SignServer in Kubernetes
 type: application
-version: "2.4.2"
+version: "2.4.3"
 appVersion: "7.3.2"
 home: https://www.signserver.org/
 icon: https://raw.githubusercontent.com/Keyfactor/signserver-ce/main/.github/images/community-signserver-icon.png
