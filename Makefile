@@ -6,7 +6,7 @@ CHART_BASE_VERSION := $(shell grep '^version:' Chart.yaml | awk '{print $$2}')
 GIT_TAG ?=
 COMMIT_SHORT_SHA ?=
 
-EE_APPVERSION := 7.8.0
+EE_APPVERSION := 7.8.1
 EE_DOCKER_REPO := repo.keyfactor.com/images/signserver-ee
 DEV_OCI_STORAGE_DSS := oci://keyfactor.jfrog.io/dev-oci/signserver/signserver/charts
 
