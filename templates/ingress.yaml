@@ -29,7 +29,16 @@ metadata:
     {{- else if .Values.services.proxyHttp.enabled  }}
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      proxy_set_header SSL_CLIENT_CERT $ssl_client_cert;
+      # Reformats $ssl_client_cert into the mod_ssl SSL_CLIENT_CERT convention expected by WildFly/Undertow.
+      # See cert-transform.js in charts/ejbca/templates/nginx-configmap.yaml for details and the njs equivalent
+      # (used when ingress.sslBackend is true and the internal nginx sidecar terminates TLS instead of ingress-nginx).
+      # Keep both in sync.
+      set_by_lua_block $ssl_client_cert_singleline {
+        local cert = ngx.var.ssl_client_cert or ""
+        cert = string.gsub(cert, "\n\t?", " ")
+        return (string.gsub(cert, "%s+$", ""))
+      }
+      proxy_set_header SSL_CLIENT_CERT $ssl_client_cert_singleline;
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     {{- end }}
     {{- with .Values.ingress.annotations }}

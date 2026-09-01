@@ -9,6 +9,10 @@ data:
   nginx.conf: {{- tpl (.Values.nginx.externalConfiguration | toYaml | indent 1) . }}
   {{- else }}
   nginx.conf: |
+    # See cert-transform.js below for why $ssl_client_cert needs reformatting before
+    # being forwarded to WildFly as SSL_CLIENT_CERT, and where this is duplicated.
+    load_module modules/ngx_http_js_module.so;
+
     user  nginx;
     worker_processes  1;
     error_log  /var/log/nginx/error.log warn;
@@ -19,6 +23,9 @@ data:
     http {
       include       /etc/nginx/mime.types;
       default_type  application/octet-stream;
+
+      js_import cert_transform from /etc/nginx/njs/cert-transform.js;
+      js_set $ssl_client_cert_singleline cert_transform.singleLine;
       log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
                           '$ssl_protocol/$ssl_cipher '
                           '$status $body_bytes_sent "$http_referer" '
@@ -70,7 +77,7 @@ data:
         location / {
           proxy_pass http://localhost:8082;
           proxy_redirect http://{{ .Values.nginx.host }}/signserver/adminweb https://{{ .Values.nginx.host }}/signserver/adminweb;
-          proxy_set_header SSL_CLIENT_CERT $ssl_client_cert;
+          proxy_set_header SSL_CLIENT_CERT $ssl_client_cert_singleLine;
           proxy_set_header Upgrade $http_upgrade;
           proxy_set_header Connection "upgrade";
           proxy_set_header Host $host;
@@ -115,7 +122,7 @@ data:
         location / {
           proxy_pass http://localhost:8082;
           proxy_redirect http://{{ $i }}/signserver/adminweb https://{{ $i }}/signserver/adminweb;
-          proxy_set_header SSL_CLIENT_CERT $ssl_client_cert;
+          proxy_set_header SSL_CLIENT_CERT $ssl_client_cert_singleLine;
           proxy_set_header Upgrade $http_upgrade;
           proxy_set_header Connection "upgrade";
           proxy_set_header Host $host;
@@ -129,4 +136,20 @@ data:
 
     }
   {{- end }}
+  cert-transform.js: |
+    // Reformats nginx's $ssl_client_cert (PEM folded across physical lines with bare-LF,
+    // tab-indented continuations) into the mod_ssl SSL_CLIENT_CERT convention that
+    // WildFly/Undertow's certificate-forwarding handler expects: the whole PEM as a
+    // single physical line with newlines replaced by spaces. Sending the bare-LF form
+    // as-is causes newer Undertow HTTP parsers to reject the request as malformed
+    // header folding (400 Bad Request) before it reaches the application.
+    //
+    // NOTE: this transform is independently re-implemented in Lua in
+    // charts/ejbca/templates/ingress.yaml (used when ingress.sslBackend is false and
+    // ingress-nginx terminates TLS itself instead of this sidecar). Keep both in sync.
+    function singleLine(r) {
+        var cert = r.variables.ssl_client_cert || '';
+        return cert.replace(/\n\t?/g, ' ').replace(/\s+$/, '');
+    }
+    export default { singleLine };
 {{- end }}
