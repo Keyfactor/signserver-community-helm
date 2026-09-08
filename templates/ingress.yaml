@@ -30,7 +30,7 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       # Reformats $ssl_client_cert into the mod_ssl SSL_CLIENT_CERT convention expected by WildFly/Undertow.
-      # See cert-transform.js in charts/ejbca/templates/nginx-configmap.yaml for details and the njs equivalent
+      # See cert-transform.js in templates/nginx-configmap.yaml for details and the njs equivalent
       # (used when ingress.sslBackend is true and the internal nginx sidecar terminates TLS instead of ingress-nginx).
       # Keep both in sync.
       set_by_lua_block $ssl_client_cert_singleline {

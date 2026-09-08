@@ -145,7 +145,7 @@ data:
     // header folding (400 Bad Request) before it reaches the application.
     //
     // NOTE: this transform is independently re-implemented in Lua in
-    // charts/ejbca/templates/ingress.yaml (used when ingress.sslBackend is false and
+    // templates/ingress.yaml (used when ingress.sslBackend is false and
     // ingress-nginx terminates TLS itself instead of this sidecar). Keep both in sync.
     function singleLine(r) {
         var cert = r.variables.ssl_client_cert || '';
