@@ -67,6 +67,9 @@ spec:
             - name: nginx-config
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
+            - name: nginx-config
+              mountPath: /etc/nginx/njs/cert-transform.js
+              subPath: cert-transform.js
             {{- if .Values.nginx.mountInternalNginxCert }}
             - name: nginx-cert-provided
               mountPath: /etc/nginx/ssl/pem/
